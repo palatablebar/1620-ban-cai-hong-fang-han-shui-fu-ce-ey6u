@@ -51,6 +51,7 @@ class Candidate:
     estimate: float | None
     range: tuple[float,float] | None
     explanations: tuple[tuple[str,float],...]
+    band: object | None = None
 
 
 @dataclass(frozen=True, slots=True)

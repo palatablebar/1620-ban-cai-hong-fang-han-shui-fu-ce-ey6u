@@ -45,12 +45,14 @@ def prepare_batch(content: bytes, windows: Windows) -> PreparedBatch:
     items = []
     adjustment = replay.adjustment
     for item in incoming:
+        band = replay.band_for(item.record.region) if adjustment.native_scale else None
         raw = estimate(fitted,item) if item.can_score() else None
         value = adjustment.apply(raw) if raw is not None else None
         sensitivity = explain(fitted,item,raw).contributions if raw is not None else ()
-        interval = adjustment.interval(value) if value is not None and adjustment.native_scale else None
-        plan = draft(item,value,adjustment.radius)
-        items.append(Candidate(plan,value,interval,sensitivity))
+        interval = adjustment.interval(value,band.radius) if value is not None and band is not None and band.trusted else None
+        plan = draft(item,value,band.radius if band is not None else 0.0,
+                     band.trusted if band is not None else True)
+        items.append(Candidate(plan,value,interval,sensitivity,band))
     return PreparedBatch(feed,vintage,profile,fitted,replay,shift,tuple(items))
 
 

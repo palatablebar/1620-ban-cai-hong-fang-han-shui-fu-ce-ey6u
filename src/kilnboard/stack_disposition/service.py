@@ -5,7 +5,7 @@ from io import StringIO
 from json import dumps, loads
 from pathlib import Path
 
-from ..probe_windows.contracts import Booking, Disposition
+from ..probe_windows.contracts import Booking, Candidate, Disposition
 from ..settings import ACTION, FIELDS, MANUAL_ACTION, NORMAL_ACTION, SIGNAL_NAMES
 from .contracts import Statement
 from .storage import DispatchArchive
@@ -13,6 +13,16 @@ from .storage import DispatchArchive
 
 LABELS = {Disposition.BOOKED:ACTION,Disposition.WAIT:'候补待排',Disposition.MANUAL:MANUAL_ACTION,
           Disposition.NORMAL:NORMAL_ACTION,Disposition.LOCKED:'维持上游锁定'}
+
+
+def band_line(candidate: Candidate) -> dict | None:
+    band = candidate.band
+    if band is None:
+        return None
+    return {'name':band.name,'scope':band.scope,'radius':round(band.radius,5),
+            'used':band.scope==candidate.draft.signal.record.region,
+            'trusted':band.trusted,'relaxed':band.relaxed,'calibration':band.calibration,
+            'replay':band.replay,'released':band.released,'retested':band.retested,'escapes':band.escapes}
 
 
 def decision_line(result: Booking) -> dict:
@@ -27,7 +37,8 @@ def decision_line(result: Booking) -> dict:
             'requested':candidate.draft.units,'minimum':candidate.draft.minimum,'units':result.assigned,
             'start':result.start,'end':result.end,'resource':candidate.draft.resource,
             'priority':round(candidate.draft.priority,3),'raw':readings,'features':signals,
-            'flags':list(item.flags),'missing':list(item.missing),'drivers':dict(candidate.explanations)}
+            'flags':list(item.flags),'missing':list(item.missing),'drivers':dict(candidate.explanations),
+            'release_band':band_line(candidate)}
 
 
 def canonical(value) -> str:
@@ -79,11 +90,14 @@ def manifest(payload: dict) -> str:
     result = StringIO(newline='')
     csv = writer(result)
     base = ('key','region','pool','revision','action','status','reason','estimate','requested','units','start','end','resource')
-    csv.writerow((*base,*(field.key for field in FIELDS),'work_quantity','exposure_quantity','source_sha256','model_hash'))
+    csv.writerow((*base,*(field.key for field in FIELDS),'work_quantity','exposure_quantity',
+                  'release_band','release_band_radius','release_band_trusted','source_sha256','model_hash'))
     for row in payload['decisions']:
         cells = [row[key] for key in base]
         cells.extend(row['raw'][field.key] for field in FIELDS)
         note = row['business_evidence']
-        cells.extend([note['work'],note['exposure'],payload['source_sha256'],payload['model_hash']])
+        band = note.get('band') or {}
+        cells.extend([note['work'],note['exposure'],band.get('name',''),band.get('radius',''),
+                      band.get('trusted',''),payload['source_sha256'],payload['model_hash']])
         csv.writerow(map(safe_cell,cells))
     return result.getvalue()

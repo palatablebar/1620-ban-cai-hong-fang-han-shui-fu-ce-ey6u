@@ -22,5 +22,10 @@ export function draw(target, data, {node, mark, choose}) {
     }
     map.append(row);
   }
-  target.replaceChildren(map,node('p',`按层位显示预测含水率 %。留窗误差带 ±${mark(data.replay.radius)} 个百分点。`,'chart-caption'));
+  const radii = Object.values(data.replay.bands || {}).filter(band=>band.scope!=='plant')
+    .map(band=>`${band.scope} ±${mark(band.radius)}`);
+  const caption = radii.length
+    ? `按层位显示预测含水率 %。放行误差带：${radii.join('，')}。`
+    : `按层位显示预测含水率 %。留窗误差带 ±${mark(data.replay.radius)} 个百分点。`;
+  target.replaceChildren(map,node('p',caption,'chart-caption'));
 }

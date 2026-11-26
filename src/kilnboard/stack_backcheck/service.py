@@ -4,6 +4,7 @@ from ..settings import MODE
 from ..moisture_tree.contracts import FittedModel
 from ..moisture_tree.service import estimate, outcome_for
 from ..drying_features.contracts import Prepared
+from .bands import release_bands
 from .calibration import fit_adjustment
 from .contracts import Validation, ValidationPoint
 from .metrics import classification, regression
@@ -24,7 +25,7 @@ def valid_points(model: FittedModel, signals: tuple[Prepared, ...]) -> list[Vali
             observed = record.target
         if observed is not None:
             results.append(ValidationPoint(record.key,record.region,record.day,estimate(model,signal),
-                                           observed,is_confirmed))
+                                           observed,is_confirmed,record.raw[0],record.raw[4]))
     return results
 
 
@@ -42,5 +43,7 @@ def backcheck(model: FittedModel, calibration: tuple[Prepared, ...], holdout: tu
     for point in hold_points:
         cohorts[point.region].append(point)
     per_region = {region: metrics(points) for region, points in sorted(cohorts.items())}
+    # 放行带只在校准窗和回放窗的成熟实测上估计，当班与未来标签不参与。
+    bands = release_bands(adjusted.radius,cal_points,hold_points) if MODE in QUANTITIES else {}
     counts = (('calibration',len(calibration)-len(cal_points)),('holdout',len(holdout)-len(hold_points)))
-    return Validation(adjusted,metrics(hold_points),per_region,counts,tuple(hold_points))
+    return Validation(adjusted,metrics(hold_points),per_region,counts,tuple(hold_points),bands)

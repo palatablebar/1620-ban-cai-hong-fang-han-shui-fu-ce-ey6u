@@ -8,14 +8,14 @@ from .contracts import Booking, Candidate, Disposition, Draft, Scenario, Schedul
 from .domain import interpret
 
 
-def draft(signal: Prepared,value: float | None,radius: float) -> Draft:
+def draft(signal: Prepared,value: float | None,radius: float,trusted: bool = True) -> Draft:
     if signal.record.hold == Hold.RESERVED:
         return Draft(signal,Disposition.LOCKED,0,0,1,0,0,'上游已锁定原流程','')
     if signal.record.hold == Hold.CHAIN:
         return Draft(signal,Disposition.MANUAL,0,0,1,0,0,'缺少上游签收或现场手续','')
     if value is None:
         return Draft(signal,Disposition.MANUAL,0,0,1,0,0,'模型无法覆盖当前输入','')
-    return interpret(signal,value,radius)
+    return interpret(signal,value,radius,trusted)
 
 
 def quantity(candidate: Draft, allowance: int, other: int, scenario: Scenario) -> int:

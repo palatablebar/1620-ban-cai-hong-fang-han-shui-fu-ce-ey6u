@@ -83,8 +83,11 @@ function renderDetail(row) {
   head.append(node('span',row.region,'context-text'),node('h3',row.key),node('b',row.action,`badge ${row.status}`));
   const metrics = node('dl','','facts');
   const data = batch.result;
+  const band = row.release_band;
+  const bandNote = band ? `${band.name} · ${band.trusted ? '可信' : '不可信'} · ±${mark(band.radius)}${band.relaxed ? ' · 已按回放放宽' : ''}` : '无误差带';
   const entries = [[modeOf(data),mark(row.estimate)],['本轮分派',`${row.units} / ${row.requested}`],
-    ['确认窗口',row.start === null ? '未排定' : `${time(row.start)}–${time(row.end)}`],['单据版本',`第 ${row.revision} 版`]];
+    ['确认窗口',row.start === null ? '未排定' : `${time(row.start)}–${time(row.end)}`],['单据版本',`第 ${row.revision} 版`],
+    ['放行误差带',bandNote]];
   entries.forEach(([name,value]) => { metrics.append(node('dt',name),node('dd',value)); });
   const reason = node('p',row.reason,'disposition');
   const raw = node('details','','measures');
@@ -99,7 +102,7 @@ function renderDetail(row) {
   for (const [name,value] of influences) {
     explain.append(node('li',`${name.replaceAll('_',' ')} · ${value > 0 ? '+' : ''}${mark(value)}`));
   }
-  if (row.interval) explain.append(node('li',`历史误差带 ${mark(row.interval[0])}–${mark(row.interval[1])}`));
+  if (row.interval) explain.append(node('li',`${band?.name || '历史误差带'} ${mark(row.interval[0])}–${mark(row.interval[1])}`));
   const checks = node('dl','','facts evidence-checks');
   for (const check of row.business_evidence.checks) {
     const amount = node('dd',`${mark(check.value)} ${check.unit}${check.exceeded ? ' · 越界' : ''}`);
@@ -166,8 +169,15 @@ function replay(data) {
                   [kind,mark(error)],['历史基线',mark(baseline)],['校准方式',data.replay.adjustment],['输入隔离',data.intake.isolated]];
   const table = node('dl','','evidence-list');
   fields.forEach(([key,value]) => table.append(node('dt',key),node('dd',value)));
+  const bands = node('dl','','evidence-list release-bands');
+  for (const band of Object.values(data.replay.bands || {})) {
+    const label = band.scope === 'plant' ? '全厂口径' : band.scope;
+    const note = `±${mark(band.radius)} · 回放放行 ${band.released}/${band.replay} · 湿板误放 ${band.escapes}` +
+      (band.relaxed ? ' · 已放宽' : '') + (band.trusted ? '' : ' · 不可信');
+    bands.append(node('dt',label),node('dd',note));
+  }
   const issue = node('p',data.drift.reasons.join('。') || '当前输入处于训练支持范围。','domain-note');
-  ui.replay.replaceChildren(table,issue);
+  ui.replay.replaceChildren(table,node('p','各舱放行误差带（只在校准窗与回放窗实测上估计）','evidence-caption'),bands,issue);
 }
 
 function render(response) {

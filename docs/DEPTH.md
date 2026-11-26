@@ -10,7 +10,7 @@ AI/ML / 传统ML · 中型
 | M2 | `cycle_anchors` | 按可见时点冻结样本和结果 | `src/kilnboard/cycle_anchors/contracts.py` `src/kilnboard/cycle_anchors/revisions.py` `src/kilnboard/cycle_anchors/service.py` | `tests/test_cycle_anchors.py` |
 | M3 | `drying_features` | 形成训练与当班共用的领域特征 | `src/kilnboard/drying_features/contracts.py` `src/kilnboard/drying_features/indicators.py` `src/kilnboard/drying_features/service.py` | `tests/test_drying_features.py` |
 | M4 | `moisture_tree` | 估计业务结果并输出本地归因 | `src/kilnboard/moisture_tree/contracts.py` `src/kilnboard/moisture_tree/estimator.py` `src/kilnboard/moisture_tree/service.py` | `tests/test_moisture_tree.py` |
-| M5 | `stack_backcheck` | 逐窗校准并与历史基线比较 | `src/kilnboard/stack_backcheck/contracts.py` `src/kilnboard/stack_backcheck/calibration.py` `src/kilnboard/stack_backcheck/service.py` | `tests/test_stack_backcheck.py` |
+| M5 | `stack_backcheck` | 逐窗校准并与历史基线比较 | `src/kilnboard/stack_backcheck/contracts.py` `src/kilnboard/stack_backcheck/calibration.py` `src/kilnboard/stack_backcheck/service.py` `src/kilnboard/stack_backcheck/bands.py` | `tests/test_stack_backcheck.py` `tests/test_release_bands.py` |
 | M6 | `fiber_shift` | 识别缺测、未建档与分布变动 | `src/kilnboard/fiber_shift/contracts.py` `src/kilnboard/fiber_shift/distribution.py` `src/kilnboard/fiber_shift/service.py` | `tests/test_fiber_shift.py` |
 | M7 | `probe_windows` | 按业务规则锁定和分派资源 | `src/kilnboard/probe_windows/contracts.py` `src/kilnboard/probe_windows/domain.py` `src/kilnboard/probe_windows/service.py` | `tests/test_probe_windows.py` |
 | M8 | `stack_disposition` | 按版本发布、导出、回查与对账 | `src/kilnboard/stack_disposition/contracts.py` `src/kilnboard/stack_disposition/storage.py` `src/kilnboard/stack_disposition/service.py` | `tests/test_stack_disposition.py` |
@@ -29,3 +29,9 @@ AI/ML / 传统ML · 中型
 | TRAP-44 | 未建档片区会拒识，异常流量高时禁止发布 | `src/kilnboard/fiber_shift/service.py` | `tests/test_fiber_shift.py::test_unseen_blocks_when_majority` |
 | TRAP-53 | 批中相邻样本不改变单条评分 | `src/kilnboard/moisture_tree/service.py` | `tests/test_moisture_tree.py::test_point_invariance` |
 | TRAP-54 | 账簿参数变化会改变模型摘要并重算 | `src/kilnboard/moisture_tree/service.py` | `tests/test_moisture_tree.py::test_fitted_signature_tracks_source` |
+| TRAP-55 | 全厂误差带在舱位偏移时可能误放湿板，按舱复核 | `src/kilnboard/stack_backcheck/bands.py` | `tests/test_release_bands.py::test_local_band_relaxes_only_with_replay_evidence` |
+| TRAP-56 | 少排复测须有本舱回放证实且不多放湿板 | `src/kilnboard/stack_backcheck/bands.py` | `tests/test_release_bands.py::test_extra_wet_board_blocks_relaxation` |
+| TRAP-57 | 回放只用决策前已到档实测，未来标签不泄漏 | `src/kilnboard/stack_backcheck/bands.py` | `tests/test_release_bands.py::test_band_uses_only_matured_labels` |
+| TRAP-58 | 本舱无可信误差带转人工，不放行 | `src/kilnboard/probe_windows/domain.py` | `tests/test_release_bands.py::test_untrusted_cabin_goes_manual` |
+| TRAP-59 | 该复测但排不进冷却窗留候补，不硬排 | `src/kilnboard/probe_windows/domain.py` | `tests/test_release_bands.py::test_needed_retest_that_misses_cooling_window_waits` |
+| TRAP-60 | 复测单与导出标清所用误差带 | `src/kilnboard/stack_disposition/service.py` | `tests/test_release_bands.py::test_workbench_slip_carries_band_label` |

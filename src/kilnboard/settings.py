@@ -14,6 +14,21 @@ SIGNAL_NAMES = ('moisture_loading', 'residence_per_mm', 'steam_penetration', 'st
 RAW_EXPLAIN_INDEX = (None, None, None, None, None)
 RESOURCE = '复测班组半小时'
 DEFAULT_BUDGET = 16
+
+# 放行误差带：先按全厂校准窗取有限样本分位，再按舱位复核。
+BAND_COVERAGE = .82
+BAND_MIN_CALIBRATION = 12   # 本舱校准窗成熟实测的最低条数
+BAND_MIN_REPLAY = 10        # 本舱回放实测的最低条数，才允许比全厂口径放宽
+RELEASE_FRACTION = .65      # 上界取误差带的比例，沿用既有业务口径
+MOISTURE_CEILING_THICK = 12.4
+MOISTURE_CEILING_THIN = 11.6
+THICK_PLATE_MM = 26
+STACK_LEVEL_GATE = 7
+
+
+def moisture_ceiling(thickness: float) -> float:
+    """按板材厚度选择下线含水率放行上限。"""
+    return MOISTURE_CEILING_THICK if thickness >= THICK_PLATE_MM else MOISTURE_CEILING_THIN
 ACTION = '安排翻层复测'
 MANUAL_ACTION = '待补烘房层签'
 NORMAL_ACTION = '正常出窑'

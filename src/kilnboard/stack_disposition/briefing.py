@@ -1,7 +1,7 @@
 from collections import defaultdict
 from math import isfinite, sqrt
 
-from ..settings import EXPOSURE_UNIT, FIELDS
+from ..settings import EXPOSURE_UNIT, FIELDS, moisture_ceiling
 
 
 def reading(key: str, label: str, value: float, unit: str, trigger: float, direction: str) -> dict:
@@ -19,12 +19,13 @@ def reading(key: str, label: str, value: float, unit: str, trigger: float, direc
 def summarize(record: dict) -> dict:
     fields = record['raw']
     if any(fields[item.key] is None for item in FIELDS):
-        return {'checks':[],'work':None,'exposure':None, 'work_label':None, 'status':'读数不全'}
+        return {'checks':[],'work':None,'exposure':None, 'work_label':None, 'status':'读数不全',
+                'band':record.get('release_band')}
     values = tuple(fields[item.key] for item in FIELDS)
     window = record['window']
     prediction = record.get('estimate')
     thickness,hours,steam,inlet,level,vent = values
-    tolerance=12.4 if thickness>=26 else 11.6
+    tolerance = moisture_ceiling(thickness)
     high = record['interval'][1] if record['interval'] else float(prediction or 0)
     findings=[
         reading('layer_number','堆垛层',level,'层',6,'high'),
@@ -34,7 +35,8 @@ def summarize(record: dict) -> dict:
     work=record['units']*30
     outcome='已留复测组分钟'
     exposure=max(0,high-tolerance) if record['status'] in ('manual','wait') else 0.
-    return {'checks':findings,'work':round(work,3),'work_label':outcome,'exposure':round(exposure,3),'status':'可核算'}
+    return {'checks':findings,'work':round(work,3),'work_label':outcome,'exposure':round(exposure,3),'status':'可核算',
+            'band':record.get('release_band')}
 
 
 def tally(rows: list[dict]) -> dict:
