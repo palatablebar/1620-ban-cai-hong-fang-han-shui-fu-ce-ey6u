@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>板材烘房含水复测</title><link rel="stylesheet" href="/static/theme.css"><script type="module" src="/static/workbench.js"></script></head>
+<body><a class="skip" href="#records">跳到单据</a><header class="factory"><div><span class="section-name">烘房质检 · 层位台账</span><h1>板材烘房含水复测</h1></div><nav aria-label="页面章节"><a href="#visual">堆垛层位图</a><a href="#records">含水复测联</a><a href="#replay">回放证据</a></nav><div class="actions"><button id="download" type="button">导出清单</button><button id="publish" class="primary" type="button">发布方案</button></div></header><main class="furnace-grid"><aside class="kiln-meter"><div class="kpis" id="kpis" aria-label="班次摘要"></div><form id="scenario" aria-label="修改班次资源">
+<label><span>复测班组半小时</span><input aria-label="总额度" id="quota" type="number" value="16" min="0" max="10000" required></label>
+<label><span>预留量</span><input aria-label="预留量" id="reserve" type="number" value="0" min="0" max="10000" required></label>
+<label><span>片区</span><select id="region" aria-label="片区"><option value="">全部片区</option></select></label>
+<details><summary>班次窗口</summary><div class="window-fields"><label><span>起始分钟</span><input id="start" type="number" min="0" max="1439" required value="360"></label><label><span>结束分钟</span><input id="stop" type="number" min="1" max="1440" required value="1005"></label></div></details>
+<button type="submit" class="primary">重算方案</button></form></aside><section class="panel visual" id="visual"><div class="section-head"><h2>堆垛层位图</h2></div><div id="chart"></div></section><div class="heat-slip"><aside class="panel case-sheet" aria-label="单据详情"><div class="section-head"><h2>当班层位明细</h2></div><div id="detail"></div></aside><section class="panel validation" id="replay"><div class="section-head"><h2>烘干回放与偏差</h2></div><div id="replay-data"></div></section></div><section class="panel has-queue" id="records"><div class="section-head"><h2>含水复测联</h2><span id="result-count"></span></div>
+<div class="queue-tools"><input id="search" aria-label="搜索单据" placeholder="搜索单据或片区"><select aria-label="按处置筛选" id="filter">
+<option value="">全部处置</option><option value="booked">已安排</option><option value="wait">候补</option><option value="manual">待复核</option><option value="locked">已锁定</option><option value="normal">常规</option></select></div>
+<div class="queue-legend"><span>单据与片区</span><span id="estimate-title">预测</span><span>处置</span></div><div class="queue-body" id="queue"></div></section></main><footer class="statusbar"><span id="status" role="status" aria-live="polite">正在读取班次</span><a href="/openapi.json">API 规范</a></footer></body>
+</html>

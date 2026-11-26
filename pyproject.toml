@@ -1,0 +1,20 @@
+[project]
+name = "kilnboard"
+version = "1.0.0"
+description = "板材烘房含水复测"
+requires-python = ">=3.11"
+dependencies = ["numpy==2.2.6", "fastapi==0.115.14", "uvicorn==0.34.3"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+kilnboard = ["web/*.html", "web/assets/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

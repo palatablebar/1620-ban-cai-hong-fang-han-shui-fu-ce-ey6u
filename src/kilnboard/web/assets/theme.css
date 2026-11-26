@@ -1,0 +1,92 @@
+* { box-sizing:border-box; }
+html { color-scheme:var(--scheme); scroll-behavior:smooth; }
+body { margin:0; min-width:310px; color:var(--ink); background:var(--paper); font:var(--font-ui); font-variant-numeric:tabular-nums; }
+button,input,select { font:inherit; }
+button { cursor:pointer; }
+button:disabled { cursor:default; opacity:.49; }
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+a { color:inherit; text-decoration-color:var(--line); text-underline-offset:.25em; }
+button,input,select { min-height:38px; border:1px solid var(--line); color:var(--ink); background:var(--input); border-radius:var(--corner); }
+input,select { padding:.42rem .58rem; min-width:0; width:100%; }
+button { padding:.42rem .72rem; }
+button.primary { background:var(--accent); color:var(--on-accent); border-color:transparent; font-weight:700; }
+:where(.factory) nav { display:flex; gap:var(--nav-gap); flex-wrap:wrap; align-items:center; }
+h1,h2,h3,p,dl { margin-block:0; }
+h1 { font:var(--font-display); letter-spacing:var(--title-track); }
+:where(.furnace-grid) h2 { font-size:var(--section-size); font-weight:700; }
+p { line-height:1.62; }
+label { min-width:0; }
+label > span,.context-text { color:var(--muted); display:block; font-size:.78rem; margin-bottom:.3rem; }
+#scenario { display:grid; gap:.6rem; align-items:end; }
+#scenario details input { min-width:55px; }
+#scenario summary { min-height:38px; align-content:center; cursor:pointer; }
+.window-fields { display:grid; grid-template-columns:1fr 1fr; gap:.35rem; }
+.actions,.queue-tools { display:flex; gap:.45rem; flex-wrap:wrap; align-items:center; }
+:where(.furnace-grid) .queue-tools input { flex:1 1 8rem; }
+:where(.furnace-grid) .queue-tools select { flex:0 1 auto; width:auto; }
+:where(.furnace-grid) .kpis { display:grid; gap:var(--metric-gap); }
+:where(.furnace-grid) .metric { min-width:0; }
+:where(.furnace-grid) .metric span { display:block; color:var(--muted); font-size:.75rem; }
+:where(.furnace-grid) .metric strong { display:block; font-size:var(--figure-size); line-height:1.08; margin-top:.42rem; }
+.badge { max-width:100%; width:max-content; white-space:normal; display:inline-block; padding:.15rem .32rem; border-radius:var(--corner); font-size:.76rem; color:var(--muted); }
+.badge.booked { color:var(--good); background:var(--good-bg); }
+.badge.manual { color:var(--warn); background:var(--warn-bg); }
+:where(.furnace-grid) .case-row { padding:.68rem .58rem; display:grid; grid-template-columns:minmax(0,1.2fr) 3.9rem minmax(6.5rem,auto); align-items:center; gap:.3rem; width:100%; text-align:left; }
+:where(.furnace-grid) .case-row[aria-pressed=true] { border-color:var(--accent); background:var(--selected); }
+:where(.furnace-grid) .case-row small { display:block; margin-top:.16rem; color:var(--muted); }
+:where(.furnace-grid) .case-estimate { text-align:right; font-variant-numeric:tabular-nums; }
+:where(.furnace-grid) .queue-body { display:grid; gap:var(--row-gap); max-height:var(--queue-height); overflow:auto; padding:.18rem; }
+:where(.furnace-grid) .facts, :where(.furnace-grid) .evidence-list { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); gap:.34rem .65rem; font-size:.83rem; }
+:where(.furnace-grid) .facts dt, :where(.furnace-grid) .evidence-list dt { color:var(--muted); }
+:where(.furnace-grid) .facts dd, :where(.furnace-grid) .evidence-list dd { margin:0; overflow-wrap:anywhere; text-align:right; }
+:where(.furnace-grid) .detail-title { display:grid; gap:.18rem; margin-bottom:.68rem; }
+:where(.furnace-grid) .disposition { margin-top:.65rem; }
+:where(.furnace-grid) .measures { margin-top:.72rem; }
+:where(.furnace-grid) .measures summary { cursor:pointer; color:var(--muted); margin-bottom:.5rem; }
+:where(.furnace-grid) .drivers { margin:.58rem 0 0; padding-left:1.1em; overflow-wrap:anywhere; }
+#status[data-error=true] { color:var(--warn); }
+:where(.furnace-grid) #chart { min-height:11rem; }
+:where(.furnace-grid) .chart-caption, :where(.furnace-grid) .empty, :where(.furnace-grid) #result-count { font-size:.78rem; color:var(--muted); }
+:where(.furnace-grid) .domain-note { color:var(--muted); margin-top:.55rem; font-size:.78rem; }
+.has-queue:focus-within,.panel:target { scroll-margin-top:12px; }
+@media (max-width:620px) {
+  #scenario { grid-template-columns:1fr 1fr; }
+  #scenario button { min-width:0; }
+  .case-row { grid-template-columns:minmax(0,1fr) 3.3rem auto; }
+}
+.skip { position:fixed; top:8px; left:8px; z-index:3; background:var(--paper); padding:.5rem 1rem; transform:translateY(-160%); }
+.skip:focus { transform:none; }
+:where(.factory) .section-name { font-size:.74rem; color:var(--muted); letter-spacing:.16em; }
+:where(.furnace-grid) .section-head { display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-bottom:.72rem; }
+:where(.furnace-grid) .queue-legend { display:grid; grid-template-columns:minmax(0,1.2fr) 3.9rem minmax(6.5rem,auto); gap:.3rem; color:var(--muted); padding:.3rem .75rem .35rem; font-size:.71rem; }
+.statusbar { display:flex; flex-wrap:wrap; justify-content:space-between; gap:.4rem; color:var(--muted); padding:1rem var(--edge); font-size:.77rem; }
+:where(.furnace-grid) .viz-button { min-height:34px; display:block; max-width:100%; }
+:where(.furnace-grid) .viz-button.marked { outline:2px solid var(--accent); outline-offset:2px; }
+canvas { max-width:100%; }
+@media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+:where(.furnace-grid) .evidence-checks { border-top:1px solid var(--line); padding-top:.55rem; margin-top:.55rem; }
+:where(.furnace-grid) .evidence-checks dd[data-outside=true] { color:var(--warn); font-weight:700; }
+:root {
+  --scheme:dark; --paper:#251c18; --board:#32231d; --input:#3a2b25; --ink:#f0e3d3; --muted:#cfb4a0;
+  --line:#6b4a39; --accent:#f4ba82; --on-accent:#2b2018; --selected:#5e3d2b; --good:#d3e3a2;
+  --good-bg:#38401e; --warn:#ffcab5; --warn-bg:#643326; --corner:1px; --edge:clamp(1rem,3vw,3.1rem);
+  --nav-gap:.9rem; --metric-gap:.8rem; --row-gap:.35rem; --queue-height:18rem; --figure-size:1.9rem;
+  --font-ui:14px/1.42 "Heiti SC",sans-serif; --font-display:800 clamp(1.8rem,3vw,2.8rem)/1.1 "Heiti SC",sans-serif;
+  --title-track:.04em; --section-size:1.02rem;
+}
+.factory { padding:1.4rem var(--edge); display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; align-items:end; background:#38241a; box-shadow:inset 0 -3px #a36d46; }
+.factory nav { padding:.5rem .65rem; background:#211a16; }
+.furnace-grid { padding:1.2rem var(--edge); display:grid; grid-template-columns:minmax(190px,.62fr) minmax(0,1.55fr) minmax(248px,.85fr); gap:1.02rem; }
+.kiln-meter { border-left:2px solid #8a6243; background:#31231d; padding:.9rem; align-self:start; }
+.kiln-meter .kpis { grid-template-columns:1fr 1fr; padding-bottom:.8rem; }
+.kiln-meter form { border-top:1px dashed #9a644b; padding-top:.76rem; grid-template-columns:1fr; }
+.furnace-grid .panel { background:var(--board); padding:1.05rem; border:1px solid #644737; }
+.furnace-grid .heat-slip { display:flex; flex-direction:column; gap:.9rem; }
+.furnace-grid .has-queue { grid-column:1 / -1; }
+.hot-row { display:grid; grid-template-columns:minmax(4.2rem,1fr) repeat(8,minmax(0,1fr)); column-gap:.27rem; align-items:stretch; margin-bottom:.36rem; }
+.hot-row button { width:100%; min-height:44px; padding:.17rem .03rem; color:#2d1c15; font-size:.77rem; background:hsl(28 76% var(--heat,80%)); }
+.hot-row span { font-size:.77rem; padding-block:.55rem; }
+.hot-row i { min-height:35px; border:1px dashed #6f5240; }
+.heat-label span { text-align:center; color:#e4bea2; }
+@media(max-width:1100px) { .furnace-grid { grid-template-columns:minmax(0,1fr) minmax(250px,.7fr); } .kiln-meter { grid-column:1/-1; } .kiln-meter form { grid-template-columns:1fr 1fr 1.5fr .8fr minmax(100px,1fr); } .kiln-meter .kpis { grid-template-columns:repeat(4,1fr); } }
+@media(max-width:680px) { .furnace-grid { grid-template-columns:1fr; } .hot-row { grid-template-columns:minmax(3rem,1fr) repeat(8,minmax(0,1fr)); } .hot-row button { font-size:.58rem; } .kiln-meter form { grid-template-columns:1fr 1fr; } }
